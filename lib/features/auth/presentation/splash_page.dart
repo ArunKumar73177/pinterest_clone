@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Pinterest-style splash screen with centered logo and loading indicator
-/// Matches the authentic Pinterest mobile app design
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 
@@ -13,7 +11,7 @@ class SplashPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Pinterest logo container with rounded corners and shadow
+            // Pinterest logo container with custom P icon
             Container(
               width: 64,
               height: 64,
@@ -28,26 +26,30 @@ class SplashPage extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Center(
-                child: Icon(
-                  Icons.pinterest,
-                  color: Colors.white,
-                  size: 40,
+              child: const Center(
+                child: Text(
+                  'P',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Arial',
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 32), // Gap between logo and loading indicator
+            const SizedBox(height: 32),
 
-            // Three-dot loading indicator with staggered bounce animation
+            // Three-dot loading indicator
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 _BouncingDot(delay: Duration.zero),
-                const SizedBox(width: 6),
-                _BouncingDot(delay: const Duration(milliseconds: 150)),
-                const SizedBox(width: 6),
-                _BouncingDot(delay: const Duration(milliseconds: 300)),
+                SizedBox(width: 6),
+                _BouncingDot(delay: Duration(milliseconds: 150)),
+                SizedBox(width: 6),
+                _BouncingDot(delay: Duration(milliseconds: 300)),
               ],
             ),
           ],
@@ -57,8 +59,6 @@ class SplashPage extends StatelessWidget {
   }
 }
 
-/// Individual bouncing dot for the loading indicator
-/// Uses AnimationController for smooth, continuous bounce effect
 class _BouncingDot extends StatefulWidget {
   final Duration delay;
 
@@ -77,7 +77,6 @@ class _BouncingDotState extends State<_BouncingDot>
   void initState() {
     super.initState();
 
-    // Setup repeating bounce animation
     _controller = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -90,7 +89,6 @@ class _BouncingDotState extends State<_BouncingDot>
       ),
     );
 
-    // Start animation after specified delay
     Future.delayed(widget.delay, () {
       if (mounted) {
         _controller.repeat(reverse: true);
@@ -115,7 +113,7 @@ class _BouncingDotState extends State<_BouncingDot>
             width: 8,
             height: 8,
             decoration: const BoxDecoration(
-              color: Color(0xFFD1D1D1), // Light gray
+              color: Color(0xFFD1D1D1),
               shape: BoxShape.circle,
             ),
           ),
