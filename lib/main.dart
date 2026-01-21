@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pinterest_clone/features/auth/presentation/splash_page.dart';
 
 void main() {
   runApp(
@@ -19,16 +20,10 @@ class MyApp extends StatelessWidget {
       title: 'Pinterest Clone',
       theme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: Colors.red,
+        colorSchemeSeed: const Color(0xFFE60023), // Pinterest red
+        scaffoldBackgroundColor: Colors.white,
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'Architecture setup complete ✅',
-            style: TextStyle(fontSize: 18),
-          ),
-        ),
-      ),
+      home: const SplashPage(),
     );
   }
 }
