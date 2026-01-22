@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pinterest_clone/features/auth/presentation/splash_page.dart';
 import 'package:pinterest_clone/features/auth/presentation/auth_entry_page.dart';
+import 'package:pinterest_clone/features/auth/presentation/sign_in_page.dart';
 
 void main() {
   runApp(
@@ -24,7 +25,13 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: const Color(0xFFE60023), // Pinterest red
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const AppNavigator(),
+      // Named routes for easy navigation
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const AppNavigator(),
+        '/auth-entry': (context) => const AuthEntryPage(),
+        '/sign-in': (context) => const SignInPage(),
+      },
     );
   }
 }
