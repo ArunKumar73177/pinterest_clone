@@ -1,9 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:pinterest_clone/features/auth/presentation/sign_in_page.dart';
 
 /// Pinterest-style onboarding screen with image collage and sign-up form
 /// First screen users see when opening the app
-class AuthEntryPage extends StatelessWidget {
+class AuthEntryPage extends StatefulWidget {
   const AuthEntryPage({super.key});
+
+  @override
+  State<AuthEntryPage> createState() => _AuthEntryPageState();
+}
+
+class _AuthEntryPageState extends State<AuthEntryPage> {
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  void _handleContinue() {
+    final email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      // Show error if email is empty
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please enter your email address'),
+          backgroundColor: const Color(0xFFE60023),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      );
+      return;
+    }
+
+    // Navigate to sign-in page with email
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SignInPage(email: email),
+      ),
+    );
+  }
+
+  void _handleGoogleSignIn() {
+    // Handle Google sign-in
+    debugPrint('Continue with Google');
+  }
+
+  void _handleRecoverAccount() {
+    // Handle account recovery
+    debugPrint('Recover account');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,6 +194,7 @@ class AuthEntryPage extends StatelessWidget {
 
                     // Email Input Field
                     TextField(
+                      controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       style: const TextStyle(
                         color: Colors.white,
@@ -181,6 +233,7 @@ class AuthEntryPage extends StatelessWidget {
                           ),
                         ),
                       ),
+                      onSubmitted: (_) => _handleContinue(),
                     ),
 
                     const SizedBox(height: 12),
@@ -189,9 +242,7 @@ class AuthEntryPage extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Handle continue action
-                        },
+                        onPressed: _handleContinue,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFE60023),
                           foregroundColor: Colors.white,
@@ -217,9 +268,7 @@ class AuthEntryPage extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: () {
-                          // Handle Google sign-in
-                        },
+                        onPressed: _handleGoogleSignIn,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -268,9 +317,7 @@ class AuthEntryPage extends StatelessWidget {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {
-                            // Handle account recovery
-                          },
+                          onPressed: _handleRecoverAccount,
                           child: const Text(
                             'Recover your account',
                             style: TextStyle(
