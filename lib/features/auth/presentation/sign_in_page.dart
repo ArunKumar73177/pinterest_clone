@@ -25,13 +25,79 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _handleLogin() {
-    // Handle login action
-    debugPrint('Login attempted with email: ${widget.email}');
+    final password = _passwordController.text;
+
+    if (password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please enter your password'),
+          backgroundColor: const Color(0xFFE60023),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      );
+      return;
+    }
+
+    // Show demo login success
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1e1e1e),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Demo Login',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          'Login attempted with:\nEmail: ${widget.email}\n\nThis is a demo app, so actual authentication is not performed.',
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Color(0xFFE60023)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _handleGoogleLogin() {
-    // Handle Google sign-in
-    debugPrint('Continue with Google');
+    // Show info dialog since this is a clone app
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1e1e1e),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Google Sign-In',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'This is a Pinterest clone app for demonstration purposes. Google Sign-In integration is not implemented.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Color(0xFFE60023)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _handleClose() {
@@ -40,8 +106,33 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _handleForgotPassword() {
-    // Handle forgot password
-    debugPrint('Forgotten password clicked');
+    // Show info dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1e1e1e),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Forgot Password',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'Password recovery is not available in this demo version.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Color(0xFFE60023)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -244,6 +335,7 @@ class _SignInPageState extends State<SignInPage> {
                           splashRadius: 20,
                         ),
                       ),
+                      onSubmitted: (_) => _handleLogin(),
                     ),
 
                     const SizedBox(height: 20),
@@ -296,134 +388,72 @@ class _SignInPageState extends State<SignInPage> {
   }
 }
 
-/// Custom painter for Google's multicolor G icon
+/// Custom painter for Google's multicolor G icon - FIXED VERSION
 class _GoogleIconPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..isAntiAlias = true;
 
-    // Blue section (top right)
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+
+    // Blue section (right side)
     paint.color = const Color(0xFF4285F4);
-    final bluePath = Path()
-      ..moveTo(size.width * 0.98, size.height * 0.51)
-      ..lineTo(size.width * 0.98, size.height * 0.41)
-      ..lineTo(size.width * 0.5, size.height * 0.41)
-      ..lineTo(size.width * 0.5, size.height * 0.59)
-      ..lineTo(size.width * 0.77, size.height * 0.59)
-      ..cubicTo(
-        size.width * 0.74,
-        size.height * 0.68,
-        size.width * 0.67,
-        size.height * 0.8,
-        size.width * 0.5,
-        size.height * 0.8,
-      );
-    canvas.drawPath(bluePath, paint);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -1.5708, // -90 degrees (top)
+      1.5708, // 90 degrees sweep
+      true,
+      paint,
+    );
 
     // Green section (bottom right)
     paint.color = const Color(0xFF34A853);
-    final greenPath = Path()
-      ..moveTo(size.width * 0.5, size.height)
-      ..cubicTo(
-        size.width * 0.67,
-        size.height,
-        size.width * 0.8,
-        size.height * 0.91,
-        size.width * 0.87,
-        size.height * 0.78,
-      )
-      ..lineTo(size.width * 0.74, size.height * 0.68)
-      ..cubicTo(
-        size.width * 0.69,
-        size.height * 0.76,
-        size.width * 0.6,
-        size.height * 0.8,
-        size.width * 0.5,
-        size.height * 0.8,
-      )
-      ..close();
-    canvas.drawPath(greenPath, paint);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      0, // 0 degrees (right)
+      0.7854, // 45 degrees sweep
+      true,
+      paint,
+    );
 
     // Yellow section (bottom left)
-    paint.color = const Color(0xFFFBBC05);
-    final yellowPath = Path()
-      ..moveTo(size.width * 0.2, size.height * 0.61)
-      ..cubicTo(
-        size.width * 0.18,
-        size.height * 0.57,
-        size.width * 0.2,
-        size.height * 0.5,
-        size.width * 0.2,
-        size.height * 0.5,
-      )
-      ..cubicTo(
-        size.width * 0.2,
-        size.height * 0.43,
-        size.width * 0.22,
-        size.height * 0.39,
-        size.width * 0.26,
-        size.height * 0.36,
-      )
-      ..lineTo(size.width * 0.05, size.height * 0.22)
-      ..cubicTo(
-        size.width * 0.0,
-        size.height * 0.3,
-        size.width * 0.0,
-        size.height * 0.42,
-        size.width * 0.0,
-        size.height * 0.5,
-      )
-      ..cubicTo(
-        size.width * 0.0,
-        size.height * 0.58,
-        size.width * 0.02,
-        size.height * 0.68,
-        size.width * 0.05,
-        size.height * 0.73,
-      )
-      ..close();
-    canvas.drawPath(yellowPath, paint);
+    paint.color = const Color(0xFBBC05);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      0.7854, // 45 degrees
+      0.7854, // 45 degrees sweep
+      true,
+      paint,
+    );
 
-    // Red section (top left)
+    // Red section (left side)
     paint.color = const Color(0xFFEA4335);
-    final redPath = Path()
-      ..moveTo(size.width * 0.5, size.height * 0.2)
-      ..cubicTo(
-        size.width * 0.63,
-        size.height * 0.2,
-        size.width * 0.72,
-        size.height * 0.24,
-        size.width * 0.79,
-        size.height * 0.31,
-      )
-      ..lineTo(size.width * 0.91, size.height * 0.19)
-      ..cubicTo(
-        size.width * 0.81,
-        size.height * 0.09,
-        size.width * 0.67,
-        size.height * 0.0,
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      1.5708, // 90 degrees (bottom)
+      1.5708, // 90 degrees sweep
+      true,
+      paint,
+    );
+
+    // Draw center circle to create the "G" shape
+    // Use the background color of the button
+    paint.color = const Color(0xFF1e1e1e);
+    canvas.drawCircle(center, radius * 0.45, paint);
+
+    // Draw rectangle on the right to complete the "G"
+    paint.color = const Color(0xFF1e1e1e);
+    final rectPath = Path()
+      ..addRect(Rect.fromLTWH(
         size.width * 0.5,
-        size.height * 0.0,
-      )
-      ..cubicTo(
-        size.width * 0.3,
-        size.height * 0.0,
-        size.width * 0.13,
-        size.height * 0.11,
-        size.width * 0.05,
-        size.height * 0.22,
-      )
-      ..lineTo(size.width * 0.26, size.height * 0.36)
-      ..cubicTo(
-        size.width * 0.31,
-        size.height * 0.27,
-        size.width * 0.39,
-        size.height * 0.2,
+        size.height * 0.35,
         size.width * 0.5,
-        size.height * 0.2,
-      )
-      ..close();
-    canvas.drawPath(redPath, paint);
+        size.height * 0.3,
+      ));
+    canvas.drawPath(rectPath, paint);
   }
 
   @override
