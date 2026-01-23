@@ -47,13 +47,63 @@ class _AuthEntryPageState extends State<AuthEntryPage> {
   }
 
   void _handleGoogleSignIn() {
-    // Handle Google sign-in
-    debugPrint('Continue with Google');
+    // Show info dialog since this is a clone app
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1e1e1e),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Google Sign-In',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'This is a Pinterest clone app for demonstration purposes. Google Sign-In integration is not implemented.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Color(0xFFE60023)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _handleRecoverAccount() {
-    // Handle account recovery
-    debugPrint('Recover account');
+    // Show info dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1e1e1e),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Account Recovery',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'Account recovery feature is not available in this demo version.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Color(0xFFE60023)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -501,143 +551,71 @@ class _ImageCardState extends State<_ImageCard>
   }
 }
 
-/// Custom painter for Google's multicolor G icon
+/// Custom painter for Google's multicolor G icon - FIXED VERSION
 class _GoogleIconPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..isAntiAlias = true;
 
-    // Blue section (top right)
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+
+    // Blue section (right side)
     paint.color = const Color(0xFF4285F4);
-    canvas.drawPath(
-      Path()
-        ..moveTo(size.width * 0.91, size.height * 0.51)
-        ..lineTo(size.width * 0.91, size.height * 0.38)
-        ..lineTo(size.width * 0.5, size.height * 0.38)
-        ..lineTo(size.width * 0.5, size.height * 0.62)
-        ..lineTo(size.width * 0.75, size.height * 0.62)
-        ..cubicTo(
-          size.width * 0.72,
-          size.height * 0.72,
-          size.width * 0.64,
-          size.height * 0.79,
-          size.width * 0.53,
-          size.height * 0.79,
-        )
-        ..close(),
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -1.5708, // -90 degrees (top)
+      1.5708, // 90 degrees sweep
+      true,
       paint,
     );
 
     // Green section (bottom right)
     paint.color = const Color(0xFF34A853);
-    canvas.drawPath(
-      Path()
-        ..moveTo(size.width * 0.5, size.height * 0.96)
-        ..cubicTo(
-          size.width * 0.62,
-          size.height * 0.96,
-          size.width * 0.72,
-          size.height * 0.91,
-          size.width * 0.79,
-          size.height * 0.83,
-        )
-        ..lineTo(size.width * 0.91, size.height * 0.73)
-        ..cubicTo(
-          size.width * 0.87,
-          size.height * 0.81,
-          size.width * 0.7,
-          size.height * 0.96,
-          size.width * 0.5,
-          size.height * 0.96,
-        )
-        ..close(),
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      0, // 0 degrees (right)
+      0.7854, // 45 degrees sweep
+      true,
       paint,
     );
 
     // Yellow section (bottom left)
-    paint.color = const Color(0xFFFBBC05);
-    canvas.drawPath(
-      Path()
-        ..moveTo(size.width * 0.24, size.height * 0.59)
-        ..cubicTo(
-          size.width * 0.22,
-          size.height * 0.55,
-          size.width * 0.21,
-          size.height * 0.53,
-          size.width * 0.21,
-          size.height * 0.5,
-        )
-        ..cubicTo(
-          size.width * 0.21,
-          size.height * 0.47,
-          size.width * 0.22,
-          size.height * 0.44,
-          size.width * 0.24,
-          size.height * 0.41,
-        )
-        ..lineTo(size.width * 0.09, size.height * 0.29)
-        ..cubicTo(
-          size.width * 0.06,
-          size.height * 0.36,
-          size.width * 0.04,
-          size.height * 0.43,
-          size.width * 0.04,
-          size.height * 0.5,
-        )
-        ..cubicTo(
-          size.width * 0.04,
-          size.height * 0.57,
-          size.width * 0.06,
-          size.height * 0.64,
-          size.width * 0.09,
-          size.height * 0.71,
-        )
-        ..close(),
+    paint.color = const Color(0xFBBC05);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      0.7854, // 45 degrees
+      0.7854, // 45 degrees sweep
+      true,
       paint,
     );
 
-    // Red section (top left)
+    // Red section (left side)
     paint.color = const Color(0xFFEA4335);
-    canvas.drawPath(
-      Path()
-        ..moveTo(size.width * 0.5, size.height * 0.22)
-        ..cubicTo(
-          size.width * 0.57,
-          size.height * 0.22,
-          size.width * 0.63,
-          size.height * 0.24,
-          size.width * 0.68,
-          size.height * 0.29,
-        )
-        ..lineTo(size.width * 0.81, size.height * 0.17)
-        ..cubicTo(
-          size.width * 0.73,
-          size.height * 0.09,
-          size.width * 0.62,
-          size.height * 0.04,
-          size.width * 0.5,
-          size.height * 0.04,
-        )
-        ..cubicTo(
-          size.width * 0.32,
-          size.height * 0.04,
-          size.width * 0.16,
-          size.height * 0.14,
-          size.width * 0.09,
-          size.height * 0.29,
-        )
-        ..lineTo(size.width * 0.24, size.height * 0.41)
-        ..cubicTo(
-          size.width * 0.28,
-          size.height * 0.3,
-          size.width * 0.38,
-          size.height * 0.22,
-          size.width * 0.5,
-          size.height * 0.22,
-        )
-        ..close(),
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      1.5708, // 90 degrees (bottom)
+      1.5708, // 90 degrees sweep
+      true,
       paint,
     );
+
+    // Draw white center circle to create the "G" shape
+    paint.color = Colors.black; // Match your background
+    canvas.drawCircle(center, radius * 0.45, paint);
+
+    // Draw white rectangle on the right to complete the "G"
+    paint.color = Colors.black;
+    final rectPath = Path()
+      ..addRect(Rect.fromLTWH(
+        size.width * 0.5,
+        size.height * 0.35,
+        size.width * 0.5,
+        size.height * 0.3,
+      ));
+    canvas.drawPath(rectPath, paint);
   }
 
   @override
