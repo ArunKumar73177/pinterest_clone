@@ -6,49 +6,38 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Pinterest logo container with custom P icon
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE60023), // Pinterest red
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Center(
-                child: Text(
-                  'P',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Arial',
+            // Pinterest logo from assets
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                width: 80,
+                height: 80,
+                color: const Color(0xFFE60023), // Pinterest red background
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Image.asset(
+                    'assets/icons/pinterest.png',
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
 
-            // Three-dot loading indicator
+            // Three-dot loading indicator (purple/lavender dots)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 _BouncingDot(delay: Duration.zero),
-                SizedBox(width: 6),
+                SizedBox(width: 8),
                 _BouncingDot(delay: Duration(milliseconds: 150)),
-                SizedBox(width: 6),
+                SizedBox(width: 8),
                 _BouncingDot(delay: Duration(milliseconds: 300)),
               ],
             ),
@@ -82,7 +71,7 @@ class _BouncingDotState extends State<_BouncingDot>
       vsync: this,
     );
 
-    _animation = Tween<double>(begin: 0, end: -8).animate(
+    _animation = Tween<double>(begin: 0, end: -10).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeInOut,
@@ -110,10 +99,10 @@ class _BouncingDotState extends State<_BouncingDot>
         return Transform.translate(
           offset: Offset(0, _animation.value),
           child: Container(
-            width: 8,
-            height: 8,
+            width: 10,
+            height: 10,
             decoration: const BoxDecoration(
-              color: Color(0xFFD1D1D1),
+              color: Color(0xFF9B8FBF), // Purple/lavender color
               shape: BoxShape.circle,
             ),
           ),
