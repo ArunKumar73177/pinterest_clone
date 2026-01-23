@@ -333,13 +333,11 @@ class _AuthEntryPageState extends State<AuthEntryPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Google Icon
-                            SizedBox(
+                            // Google Icon - Using asset image
+                            Image.asset(
+                              'assets/icons/google.png',
                               width: 20,
                               height: 20,
-                              child: CustomPaint(
-                                painter: _GoogleIconPainter(),
-                              ),
                             ),
                             const SizedBox(width: 12),
                             const Text(
@@ -549,75 +547,4 @@ class _ImageCardState extends State<_ImageCard>
       ),
     );
   }
-}
-
-/// Custom painter for Google's multicolor G icon - FIXED VERSION
-class _GoogleIconPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.fill
-      ..isAntiAlias = true;
-
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
-
-    // Blue section (right side)
-    paint.color = const Color(0xFF4285F4);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -1.5708, // -90 degrees (top)
-      1.5708, // 90 degrees sweep
-      true,
-      paint,
-    );
-
-    // Green section (bottom right)
-    paint.color = const Color(0xFF34A853);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      0, // 0 degrees (right)
-      0.7854, // 45 degrees sweep
-      true,
-      paint,
-    );
-
-    // Yellow section (bottom left)
-    paint.color = const Color(0xFBBC05);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      0.7854, // 45 degrees
-      0.7854, // 45 degrees sweep
-      true,
-      paint,
-    );
-
-    // Red section (left side)
-    paint.color = const Color(0xFFEA4335);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      1.5708, // 90 degrees (bottom)
-      1.5708, // 90 degrees sweep
-      true,
-      paint,
-    );
-
-    // Draw white center circle to create the "G" shape
-    paint.color = Colors.black; // Match your background
-    canvas.drawCircle(center, radius * 0.45, paint);
-
-    // Draw white rectangle on the right to complete the "G"
-    paint.color = Colors.black;
-    final rectPath = Path()
-      ..addRect(Rect.fromLTWH(
-        size.width * 0.5,
-        size.height * 0.35,
-        size.width * 0.5,
-        size.height * 0.3,
-      ));
-    canvas.drawPath(rectPath, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

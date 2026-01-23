@@ -7,7 +7,7 @@ class SignInPage extends StatefulWidget {
 
   const SignInPage({
     super.key,
-    this.email = 'user@example.com', // Default email for demo
+    this.email = 'user@example.com',
   });
 
   @override
@@ -41,7 +41,6 @@ class _SignInPageState extends State<SignInPage> {
       return;
     }
 
-    // Show demo login success
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -71,7 +70,6 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _handleGoogleLogin() {
-    // Show info dialog since this is a clone app
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -101,12 +99,10 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _handleClose() {
-    // Navigate back
     Navigator.of(context).pop();
   }
 
   void _handleForgotPassword() {
-    // Show info dialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -149,7 +145,6 @@ class _SignInPageState extends State<SignInPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Close button (top-left aligned)
                     Align(
                       alignment: Alignment.centerLeft,
                       child: IconButton(
@@ -167,10 +162,7 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 16),
-
-                    // Title - "Log in"
                     const Text(
                       'Log in',
                       style: TextStyle(
@@ -179,10 +171,7 @@ class _SignInPageState extends State<SignInPage> {
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-
                     const SizedBox(height: 32),
-
-                    // Continue with Google Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -199,13 +188,10 @@ class _SignInPageState extends State<SignInPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Google Icon
-                            SizedBox(
+                            Image.asset(
+                              'assets/icons/google.png',
                               width: 18,
                               height: 18,
-                              child: CustomPaint(
-                                painter: _GoogleIconPainter(),
-                              ),
                             ),
                             const SizedBox(width: 12),
                             const Text(
@@ -219,10 +205,7 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 24),
-
-                    // Divider with "OR"
                     Row(
                       children: [
                         Expanded(
@@ -249,10 +232,7 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 24),
-
-                    // Email Display (readonly)
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
@@ -275,10 +255,7 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 12),
-
-                    // Password Input with visibility toggle
                     TextField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
@@ -337,10 +314,7 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                       onSubmitted: (_) => _handleLogin(),
                     ),
-
                     const SizedBox(height: 20),
-
-                    // Log in Button - Pinterest red
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -363,10 +337,7 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 24),
-
-                    // Forgotten password link
                     TextButton(
                       onPressed: _handleForgotPassword,
                       child: Text(
@@ -386,76 +357,4 @@ class _SignInPageState extends State<SignInPage> {
       ),
     );
   }
-}
-
-/// Custom painter for Google's multicolor G icon - FIXED VERSION
-class _GoogleIconPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.fill
-      ..isAntiAlias = true;
-
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
-
-    // Blue section (right side)
-    paint.color = const Color(0xFF4285F4);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -1.5708, // -90 degrees (top)
-      1.5708, // 90 degrees sweep
-      true,
-      paint,
-    );
-
-    // Green section (bottom right)
-    paint.color = const Color(0xFF34A853);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      0, // 0 degrees (right)
-      0.7854, // 45 degrees sweep
-      true,
-      paint,
-    );
-
-    // Yellow section (bottom left)
-    paint.color = const Color(0xFBBC05);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      0.7854, // 45 degrees
-      0.7854, // 45 degrees sweep
-      true,
-      paint,
-    );
-
-    // Red section (left side)
-    paint.color = const Color(0xFFEA4335);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      1.5708, // 90 degrees (bottom)
-      1.5708, // 90 degrees sweep
-      true,
-      paint,
-    );
-
-    // Draw center circle to create the "G" shape
-    // Use the background color of the button
-    paint.color = const Color(0xFF1e1e1e);
-    canvas.drawCircle(center, radius * 0.45, paint);
-
-    // Draw rectangle on the right to complete the "G"
-    paint.color = const Color(0xFF1e1e1e);
-    final rectPath = Path()
-      ..addRect(Rect.fromLTWH(
-        size.width * 0.5,
-        size.height * 0.35,
-        size.width * 0.5,
-        size.height * 0.3,
-      ));
-    canvas.drawPath(rectPath, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
