@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart'; // ✓ IMAGE CA
 import 'package:shimmer/shimmer.dart'; // ✓ LOADING EFFECTS
 import 'package:go_router/go_router.dart'; // ✓ NAVIGATION
 import '../providers/home_provider.dart';
+import '../../../core/widgets/pinterest_bottom_nav.dart';
 
 /// ✓ RIVERPOD: Main home feed page - Pinterest-style masonry grid
 /// ConsumerWidget allows direct access to Riverpod providers
@@ -20,28 +21,41 @@ class HomePage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.black, // Pinterest's signature black background
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Pinterest-style minimal header
-            _buildPinterestHeader(context),
+      body: RefreshIndicator(
+        // ✓ PULL-TO-REFRESH: Invalidate provider to reload pins
+        onRefresh: () async {
+          ref.invalidate(pinsProvider);
+          // Wait for new data to load
+          await ref.read(pinsProvider.future);
+        },
+        color: Colors.white,
+        backgroundColor: Colors.grey[900],
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Pinterest-style minimal header
+              _buildPinterestHeader(context),
 
-            // Main scrollable content area
-            Expanded(
-              child: pinsAsyncValue.when(
-                // ✓ SHIMMER: Loading state with shimmer placeholders
-                loading: () => _buildLoadingGrid(),
+              // Main scrollable content area
+              Expanded(
+                child: pinsAsyncValue.when(
+                  // ✓ SHIMMER: Loading state with shimmer placeholders
+                  loading: () => _buildLoadingGrid(),
 
-                // Error state with retry option
-                error: (error, stack) => _buildErrorState(error, ref),
+                  // Error state with retry option
+                  error: (error, stack) => _buildErrorState(error, ref),
 
-                // ✓ STAGGERED GRID: Success - show masonry grid of pins
-                data: (pins) => _buildPinsGrid(context, ref, pins),
+                  // ✓ STAGGERED GRID: Success - show masonry grid of pins
+                  data: (pins) => _buildPinsGrid(context, ref, pins),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+
+      // ✓ BOTTOM NAVIGATION: Pinterest-style bottom nav bar
+      bottomNavigationBar: const PinterestBottomNav(currentIndex: 0),
     );
   }
 

@@ -2,14 +2,17 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // ✓ STATE MANAGEMENT
 import 'package:dio/dio.dart'; // ✓ NETWORKING
+import 'dart:math';
 
 /// Pin model representing a single Pinterest-style pin
 class Pin {
   final int id;
   final String imageUrl;
   final double aspectRatio;
-  final String title; // Added for detail page
+  final String title;
   final String? description;
+  final String? authorName;
+  final String? authorImage;
 
   Pin({
     required this.id,
@@ -17,41 +20,49 @@ class Pin {
     required this.aspectRatio,
     this.title = '',
     this.description,
+    this.authorName,
+    this.authorImage,
   });
 
-  /// Factory constructor to create Pin from JSON
-  factory Pin.fromJson(Map<String, dynamic> json) {
+  /// Factory constructor to create Pin from Unsplash API JSON
+  factory Pin.fromUnsplashJson(Map<String, dynamic> json) {
+    final width = json['width'] as int;
+    final height = json['height'] as int;
+    final aspectRatio = height / width; // For vertical scrolling
+
     return Pin(
-      id: json['id'] as int,
-      imageUrl: json['imageUrl'] as String,
-      aspectRatio: (json['aspectRatio'] as num).toDouble(),
-      title: json['title'] as String? ?? '',
+      id: json['id'].hashCode, // Convert string ID to int
+      imageUrl: json['urls']['regular'] as String, // High quality image
+      aspectRatio: aspectRatio.clamp(0.6, 1.5), // Limit extreme ratios
+      title: json['alt_description'] as String? ??
+          json['description'] as String? ??
+          'Pinterest Pin',
       description: json['description'] as String?,
+      authorName: json['user']['name'] as String?,
+      authorImage: json['user']['profile_image']['medium'] as String?,
     );
   }
 }
 
-/// ✓ DIO: Dio client provider for making HTTP requests
-/// Configured with Pinterest-like API settings
+/// ✓ DIO: Dio client provider for Unsplash API
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'https://api.pinterest.com/v5', // Pinterest API structure
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 3),
+      baseUrl: 'https://api.unsplash.com',
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        'Accept-Version': 'v1',
       },
     ),
   );
 
-  // ✓ DIO: Add interceptors for request/response logging
+  // ✓ DIO: Add interceptors for debugging
   dio.interceptors.add(
     LogInterceptor(
       requestBody: true,
-      responseBody: true,
-      logPrint: (obj) => print('[DIO] $obj'), // Visible Dio usage
+      responseBody: false, // Don't log large image data
+      logPrint: (obj) => print('[DIO] $obj'),
     ),
   );
 
@@ -64,43 +75,94 @@ final pinsServiceProvider = Provider<PinsService>((ref) {
   return PinsService(dio);
 });
 
-/// Service class that handles API calls using Dio
+/// Service class that handles Unsplash API calls using Dio
 class PinsService {
   final Dio _dio;
 
+  // IMPORTANT: Replace with your Unsplash Access Key
+  // Get free API key at: https://unsplash.com/developers
+  static const String _accessKey = '4WYOrF59mpX2qDyXOyg4IdGNshJHEGcEHHOpjy0yJL8';
+
+  // Search topics for varied content (randomly selected)
+  static final List<String> _searchTopics = [
+    'nature', 'architecture', 'food', 'travel', 'fashion',
+    'art', 'animals', 'technology', 'interior', 'minimal',
+    'landscape', 'portrait', 'vintage', 'modern', 'ocean'
+  ];
+
   PinsService(this._dio);
 
-  /// ✓ DIO: Fetch pins from API (currently mocked)
-  /// In production: final response = await _dio.get('/pins/feed');
+  /// ✓ DIO: Fetch pins from Unsplash API
+  /// Returns different images each time by using random search topics
   Future<List<Pin>> fetchPins() async {
     try {
-      // Simulate network delay to showcase Dio and loading states
-      await Future.delayed(const Duration(milliseconds: 1200));
+      // Select random topic for variety
+      final random = Random();
+      final topic = _searchTopics[random.nextInt(_searchTopics.length)];
+      final randomPage = random.nextInt(10) + 1; // Random page 1-10
 
-      // Mock Pinterest-style feed data with varied aspect ratios
-      // Real implementation would parse: response.data['items']
-      final mockResponse = [
-        {'id': 1, 'imageUrl': 'https://images.unsplash.com/photo-1597434429739-2574d7e06807?w=800', 'aspectRatio': 0.75, 'title': 'Mountain Landscape'},
-        {'id': 2, 'imageUrl': 'https://images.unsplash.com/photo-1717674798266-e2f700bdafec?w=800', 'aspectRatio': 1.35, 'title': 'Fashion Portrait'},
-        {'id': 3, 'imageUrl': 'https://images.unsplash.com/photo-1648475237029-7f853809ca14?w=800', 'aspectRatio': 0.6, 'title': 'Interior Design'},
-        {'id': 4, 'imageUrl': 'https://images.unsplash.com/photo-1765128331807-4a6cf08d5e5b?w=800', 'aspectRatio': 1.0, 'title': 'Culinary Art'},
-        {'id': 5, 'imageUrl': 'https://images.unsplash.com/photo-1688842338438-f2371e85e1c6?w=800', 'aspectRatio': 1.5, 'title': 'Architecture'},
-        {'id': 6, 'imageUrl': 'https://images.unsplash.com/photo-1567003762442-2078a0da1cee?w=800', 'aspectRatio': 0.8, 'title': 'Creative Art'},
-        {'id': 7, 'imageUrl': 'https://images.unsplash.com/photo-1769103489351-cf0e7e3a33c7?w=800', 'aspectRatio': 0.7, 'title': 'Minimalist'},
-        {'id': 8, 'imageUrl': 'https://images.unsplash.com/photo-1768916905618-304bf04332b5?w=800', 'aspectRatio': 1.25, 'title': 'Botanical'},
-        {'id': 9, 'imageUrl': 'https://images.unsplash.com/photo-1712316146767-610c37aa62a2?w=800', 'aspectRatio': 1.1, 'title': 'Cute Pets'},
-        {'id': 10, 'imageUrl': 'https://images.unsplash.com/photo-1569832724830-0b4ab7b52ab2?w=800', 'aspectRatio': 0.65, 'title': 'Ocean Waves'},
-        {'id': 11, 'imageUrl': 'https://images.unsplash.com/photo-1622032209098-b34bd5fb1776?w=800', 'aspectRatio': 1.4, 'title': 'Vintage'},
-        {'id': 12, 'imageUrl': 'https://images.unsplash.com/photo-1738520420654-87cd2ad005d0?w=800', 'aspectRatio': 0.9, 'title': 'Technology'},
-        {'id': 13, 'imageUrl': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800', 'aspectRatio': 0.7, 'title': 'Mountain Lake'},
-        {'id': 14, 'imageUrl': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800', 'aspectRatio': 1.2, 'title': 'Cozy Cat'},
-        {'id': 15, 'imageUrl': 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?w=800', 'aspectRatio': 1.0, 'title': 'Breakfast'},
-      ];
+      print('[UNSPLASH] Fetching: $topic (page $randomPage)');
 
-      return mockResponse.map((json) => Pin.fromJson(json)).toList();
+      // ✓ DIO: Make GET request to Unsplash API
+      final response = await _dio.get(
+        '/search/photos',
+        queryParameters: {
+          'client_id': _accessKey,
+          'query': topic,
+          'per_page': 30, // Pinterest typically shows 20-30 pins
+          'page': randomPage,
+          'orientation': 'portrait', // Prefer vertical images
+        },
+      );
+
+      // Parse response
+      final results = response.data['results'] as List;
+
+      if (results.isEmpty) {
+        throw Exception('No images found');
+      }
+
+      // Convert to Pin objects
+      final pins = results
+          .map((json) => Pin.fromUnsplashJson(json as Map<String, dynamic>))
+          .toList();
+
+      print('[UNSPLASH] Loaded ${pins.length} pins');
+      return pins;
+
     } on DioException catch (e) {
-      // ✓ DIO: Handle Dio-specific errors (network, timeout, etc.)
-      throw Exception('Network error: ${e.message}');
+      // ✓ DIO: Handle specific Dio errors
+      if (e.response?.statusCode == 401) {
+        throw Exception('Invalid Unsplash API key. Please add your key in home_provider.dart');
+      } else if (e.response?.statusCode == 403) {
+        throw Exception('Rate limit exceeded. Try again in a few minutes.');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    } catch (e) {
+      throw Exception('Failed to load pins: $e');
+    }
+  }
+
+  /// Fetch pins by specific topic (for future search feature)
+  Future<List<Pin>> fetchPinsByTopic(String topic) async {
+    try {
+      final response = await _dio.get(
+        '/search/photos',
+        queryParameters: {
+          'client_id': _accessKey,
+          'query': topic,
+          'per_page': 30,
+          'orientation': 'portrait',
+        },
+      );
+
+      final results = response.data['results'] as List;
+      return results
+          .map((json) => Pin.fromUnsplashJson(json as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception('Failed to search: ${e.message}');
     }
   }
 }
@@ -113,5 +175,4 @@ final pinsProvider = FutureProvider<List<Pin>>((ref) async {
 });
 
 /// ✓ RIVERPOD: Provider to track selected pin for navigation
-/// StateProvider allows simple value updates across the app
 final selectedPinProvider = StateProvider<Pin?>((ref) => null);
