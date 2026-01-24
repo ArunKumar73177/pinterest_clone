@@ -220,24 +220,32 @@ class _SignInPageState extends State<SignInPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Google icon placeholder (using G icon)
-                            Container(
+                            // Google Logo - Using asset as specified
+                            Image.asset(
+                              'assets/icons/google.png',
                               width: 18,
                               height: 18,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  'G',
-                                  style: TextStyle(
-                                    color: Color(0xFF1e1e1e),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
+                              errorBuilder: (context, error, stackTrace) {
+                                // Fallback if asset is not found
+                                return Container(
+                                  width: 18,
+                                  height: 18,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(2),
                                   ),
-                                ),
-                              ),
+                                  child: const Center(
+                                    child: Text(
+                                      'G',
+                                      style: TextStyle(
+                                        color: Color(0xFF1e1e1e),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                             const SizedBox(width: 12),
                             const Text(
