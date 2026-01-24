@@ -1,17 +1,32 @@
 // lib/main.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // ✓ STATE MANAGEMENT
 import 'package:go_router/go_router.dart'; // ✓ NAVIGATION
 import 'package:pinterest_clone/features/auth/presentation/splash_page.dart';
 import 'package:pinterest_clone/features/auth/presentation/auth_entry_page.dart';
 import 'package:pinterest_clone/features/auth/presentation/sign_in_page.dart';
 import 'package:pinterest_clone/features/home/presentation/home_page.dart';
+import 'package:pinterest_clone/features/pin/presentation/pin_detail_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Pinterest-style status bar (dark theme)
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light, // White icons
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
+
+  // ✓ RIVERPOD: Wrap app with ProviderScope for state management
   runApp(
     const ProviderScope(
-      child: MyApp(),
+      child: PinterestCloneApp(),
     ),
   );
 }
@@ -50,28 +65,27 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Main home feed (Pinterest-style grid)
+      // Main home feed (Pinterest-style masonry grid)
       GoRoute(
         path: '/home',
         name: 'home',
         builder: (context, state) => const HomePage(),
       ),
 
-      // Future routes can be added here
-      // Example: Pin detail page
-      // GoRoute(
-      //   path: '/pin/:id',
-      //   name: 'pin-detail',
-      //   builder: (context, state) {
-      //     final pinId = state.pathParameters['id']!;
-      //     return PinDetailPage(pinId: pinId);
-      //   },
-      // ),
+      // ✓ GO_ROUTER: Pin detail page with path parameter
+      GoRoute(
+        path: '/pin/:id',
+        name: 'pin-detail',
+        builder: (context, state) {
+          final pinId = state.pathParameters['id']!;
+          return PinDetailPage(pinId: pinId);
+        },
+      ),
     ],
 
     // Error page for undefined routes
     errorBuilder: (context, state) => Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -87,7 +101,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
+                color: Colors.grey[300],
               ),
             ),
             const SizedBox(height: 8),
@@ -121,23 +135,33 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+/// Main app widget
+/// ✓ RIVERPOD: ConsumerWidget to access providers
+class PinterestCloneApp extends ConsumerWidget {
+  const PinterestCloneApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ✓ GO_ROUTER + RIVERPOD: Get router from provider
+    // ✓ GO_ROUTER: Get router instance from provider
     final router = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
       title: 'Pinterest Clone',
+      debugShowCheckedModeBanner: false,
+
+      // Pinterest dark theme (used in home feed and pin detail)
       theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
+        colorScheme: ColorScheme.dark(
+          primary: const Color(0xFFE60023), // Pinterest red
+          secondary: Colors.white,
+          surface: Colors.black,
+        ),
         useMaterial3: true,
-        colorSchemeSeed: const Color(0xFFE60023), // Pinterest red
-        scaffoldBackgroundColor: Colors.white,
       ),
-      // ✓ GO_ROUTER: Use router configuration
+
+      // ✓ GO_ROUTER: Router configuration
       routerConfig: router,
     );
   }
