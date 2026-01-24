@@ -340,7 +340,7 @@ class _AuthEntryPageState extends State<AuthEntryPage> {
 
                     const SizedBox(height: 12),
 
-                    // Continue with Google Button - Dark outlined
+                    // Continue with Google Button - Dark outlined with Google logo
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
@@ -359,24 +359,32 @@ class _AuthEntryPageState extends State<AuthEntryPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Google Icon placeholder
-                            Container(
+                            // Google Logo - Using asset as specified
+                            Image.asset(
+                              'assets/icons/google.png',
                               width: 20,
                               height: 20,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  'G',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
+                              errorBuilder: (context, error, stackTrace) {
+                                // Fallback if asset is not found
+                                return Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(2),
                                   ),
-                                ),
-                              ),
+                                  child: const Center(
+                                    child: Text(
+                                      'G',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                             const SizedBox(width: 12),
                             const Text(
