@@ -1,7 +1,33 @@
-import 'package:flutter/material.dart';
+// lib/features/auth/presentation/splash_page.dart
 
-class SplashPage extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // ✓ NAVIGATION
+
+/// Pinterest-style splash screen with animated loading dots
+/// Automatically navigates to auth entry after 3 seconds
+/// ✓ GO_ROUTER: Uses context.go() for navigation
+class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
+
+  @override
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  @override
+  void initState() {
+    super.initState();
+    _navigateToAuthEntry();
+  }
+
+  /// ✓ GO_ROUTER: Navigate to auth entry page after 3 seconds
+  void _navigateToAuthEntry() {
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        context.go('/auth-entry');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +67,7 @@ class SplashPage extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            // Three-dot loading indicator
+            // Three-dot loading indicator with bounce animation
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
@@ -59,6 +85,8 @@ class SplashPage extends StatelessWidget {
   }
 }
 
+/// Individual bouncing dot with staggered animation
+/// Creates a smooth wave-like loading effect
 class _BouncingDot extends StatefulWidget {
   final Duration delay;
 
@@ -89,6 +117,7 @@ class _BouncingDotState extends State<_BouncingDot>
       ),
     );
 
+    // Start animation after delay for staggered effect
     Future.delayed(widget.delay, () {
       if (mounted) {
         _controller.repeat(reverse: true);

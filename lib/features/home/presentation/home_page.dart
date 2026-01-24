@@ -18,11 +18,11 @@ class HomePage extends ConsumerWidget {
     final pinsAsyncValue = ref.watch(pinsProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black, // Pinterest black background
       body: SafeArea(
         child: Column(
           children: [
-            // Header
+            // Header with "For you" text and underline indicator
             _buildHeader(),
 
             // Scrollable content with masonry grid
@@ -44,19 +44,34 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  /// Header section
+  /// Header section with "For you" title and underline indicator
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: const Row(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
         children: [
-          Text(
-            'For you',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'For you',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Underline indicator
+              Container(
+                width: 60,
+                height: 2,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(1),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -69,7 +84,7 @@ class HomePage extends ConsumerWidget {
     final aspectRatios = [0.75, 1.3, 0.65, 1.0, 1.5, 0.8, 0.7, 1.2];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: MasonryGridView.count(
         crossAxisCount: 2,
         mainAxisSpacing: 8,
@@ -86,14 +101,14 @@ class HomePage extends ConsumerWidget {
   /// ✓ SHIMMER: Individual shimmer loading card
   Widget _buildShimmerCard(double aspectRatio) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: Colors.grey[900]!,
+      highlightColor: Colors.grey[800]!,
       child: AspectRatio(
         aspectRatio: 1 / aspectRatio,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(16),
+            color: Colors.grey[900],
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
       ),
@@ -112,7 +127,7 @@ class HomePage extends ConsumerWidget {
             'Failed to load pins',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[600],
+              color: Colors.grey[400],
             ),
           ),
           const SizedBox(height: 8),
@@ -120,7 +135,7 @@ class HomePage extends ConsumerWidget {
             error.toString(),
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[500],
+              color: Colors.grey[600],
             ),
             textAlign: TextAlign.center,
           ),
@@ -132,7 +147,7 @@ class HomePage extends ConsumerWidget {
   /// ✓ STAGGERED GRID VIEW: Main Pinterest-style masonry grid
   Widget _buildPinsGrid(List<Pin> pins) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: MasonryGridView.count(
         crossAxisCount: 2, // Two columns
         mainAxisSpacing: 8,
@@ -148,7 +163,7 @@ class HomePage extends ConsumerWidget {
   /// ✓ CACHED_NETWORK_IMAGE: Individual pin card with cached image
   Widget _buildPinCard(Pin pin) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(20), // Larger corner radius
       child: CachedNetworkImage(
         imageUrl: pin.imageUrl,
         fit: BoxFit.cover,
@@ -157,10 +172,10 @@ class HomePage extends ConsumerWidget {
         placeholder: (context, url) => AspectRatio(
           aspectRatio: 1 / pin.aspectRatio,
           child: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
+            baseColor: Colors.grey[900]!,
+            highlightColor: Colors.grey[800]!,
             child: Container(
-              color: Colors.grey[300],
+              color: Colors.grey[900],
             ),
           ),
         ),
@@ -169,7 +184,7 @@ class HomePage extends ConsumerWidget {
         errorWidget: (context, url, error) => AspectRatio(
           aspectRatio: 1 / pin.aspectRatio,
           child: Container(
-            color: Colors.grey[200],
+            color: Colors.grey[900],
             child: const Icon(
               Icons.broken_image_outlined,
               size: 48,

@@ -1,8 +1,14 @@
+// lib/features/auth/presentation/auth_entry_page.dart
+
 import 'package:flutter/material.dart';
-import 'package:pinterest_clone/features/auth/presentation/sign_in_page.dart';
+import 'package:go_router/go_router.dart'; // ✓ NAVIGATION
+import 'package:cached_network_image/cached_network_image.dart'; // ✓ IMAGE CACHING
+import 'package:shimmer/shimmer.dart'; // ✓ LOADING EFFECTS
 
 /// Pinterest-style onboarding screen with image collage and sign-up form
 /// First screen users see when opening the app
+/// ✓ GO_ROUTER: Uses context.go() for navigation
+/// ✓ CACHED_NETWORK_IMAGE: All images are cached for performance
 class AuthEntryPage extends StatefulWidget {
   const AuthEntryPage({super.key});
 
@@ -37,13 +43,23 @@ class _AuthEntryPageState extends State<AuthEntryPage> {
       return;
     }
 
-    // Navigate to sign-in page with email
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SignInPage(email: email),
-      ),
-    );
+    // Basic email validation
+    if (!email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please enter a valid email address'),
+          backgroundColor: const Color(0xFFE60023),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      );
+      return;
+    }
+
+    // ✓ GO_ROUTER: Navigate to sign-in page with email as extra data
+    context.go('/sign-in', extra: email);
   }
 
   void _handleGoogleSignIn() {
@@ -60,15 +76,22 @@ class _AuthEntryPageState extends State<AuthEntryPage> {
           style: TextStyle(color: Colors.white),
         ),
         content: const Text(
-          'This is a Pinterest clone app for demonstration purposes. Google Sign-In integration is not implemented.',
+          'This is a Pinterest clone app for demonstration purposes.\n\nIn a production app, this would authenticate with Google and navigate to the home feed.',
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              // ✓ GO_ROUTER: Navigate to home
+              context.go('/home');
+            },
             child: const Text(
-              'OK',
-              style: TextStyle(color: Color(0xFFE60023)),
+              'Continue to Home',
+              style: TextStyle(
+                color: Color(0xFFE60023),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -98,7 +121,10 @@ class _AuthEntryPageState extends State<AuthEntryPage> {
             onPressed: () => Navigator.pop(context),
             child: const Text(
               'OK',
-              style: TextStyle(color: Color(0xFFE60023)),
+              style: TextStyle(
+                color: Color(0xFFE60023),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -333,11 +359,24 @@ class _AuthEntryPageState extends State<AuthEntryPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Google Icon - Using asset image
-                            Image.asset(
-                              'assets/icons/google.png',
+                            // Google Icon placeholder
+                            Container(
                               width: 20,
                               height: 20,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'G',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ),
                             const SizedBox(width: 12),
                             const Text(
@@ -444,6 +483,8 @@ class _AuthEntryPageState extends State<AuthEntryPage> {
 }
 
 /// Individual image card with rounded corners and subtle zoom animation
+/// ✓ CACHED_NETWORK_IMAGE: Uses cached images for better performance
+/// ✓ SHIMMER: Loading placeholder with shimmer effect
 class _ImageCard extends StatefulWidget {
   final double width;
   final double height;
@@ -521,25 +562,26 @@ class _ImageCardState extends State<_ImageCard>
           builder: (context, child) {
             return Transform.scale(
               scale: _scaleAnimation.value,
-              child: Image.network(
-                widget.imageUrl,
+              // ✓ CACHED_NETWORK_IMAGE: Image caching for better performance
+              child: CachedNetworkImage(
+                imageUrl: widget.imageUrl,
                 fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
+                // ✓ SHIMMER: Loading placeholder
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.grey[900]!,
+                  highlightColor: Colors.grey[800]!,
+                  child: Container(
                     color: Colors.grey[900],
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[900],
-                    child: const Icon(
-                      Icons.image,
-                      color: Colors.grey,
-                      size: 32,
-                    ),
-                  );
-                },
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey[900],
+                  child: const Icon(
+                    Icons.image,
+                    color: Colors.grey,
+                    size: 32,
+                  ),
+                ),
               ),
             );
           },
