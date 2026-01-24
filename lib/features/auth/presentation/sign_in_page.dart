@@ -1,7 +1,11 @@
+// lib/features/auth/presentation/sign_in_page.dart
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // ✓ NAVIGATION
 
 /// Pinterest-style login screen shown after user enters email
 /// Features password input with visibility toggle and Google sign-in option
+/// ✓ GO_ROUTER: Uses context.go() and context.pop() for navigation
 class SignInPage extends StatefulWidget {
   final String email;
 
@@ -24,6 +28,7 @@ class _SignInPageState extends State<SignInPage> {
     super.dispose();
   }
 
+  /// Handle login with password validation
   void _handleLogin() {
     final password = _passwordController.text;
 
@@ -41,6 +46,7 @@ class _SignInPageState extends State<SignInPage> {
       return;
     }
 
+    // Show demo login dialog and navigate to home
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -53,15 +59,22 @@ class _SignInPageState extends State<SignInPage> {
           style: TextStyle(color: Colors.white),
         ),
         content: Text(
-          'Login attempted with:\nEmail: ${widget.email}\n\nThis is a demo app, so actual authentication is not performed.',
+          'Login attempted with:\nEmail: ${widget.email}\n\nNavigating to home feed...',
           style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              // ✓ GO_ROUTER: Navigate to home page
+              context.go('/home');
+            },
             child: const Text(
-              'OK',
-              style: TextStyle(color: Color(0xFFE60023)),
+              'Continue',
+              style: TextStyle(
+                color: Color(0xFFE60023),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -69,6 +82,7 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  /// Handle Google sign-in (demo)
   void _handleGoogleLogin() {
     showDialog(
       context: context,
@@ -82,15 +96,22 @@ class _SignInPageState extends State<SignInPage> {
           style: TextStyle(color: Colors.white),
         ),
         content: const Text(
-          'This is a Pinterest clone app for demonstration purposes. Google Sign-In integration is not implemented.',
+          'This is a Pinterest clone app for demonstration purposes.\n\nIn a production app, this would authenticate with Google and navigate to the home feed.',
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              // ✓ GO_ROUTER: Navigate to home after "authentication"
+              context.go('/home');
+            },
             child: const Text(
-              'OK',
-              style: TextStyle(color: Color(0xFFE60023)),
+              'Continue to Home',
+              style: TextStyle(
+                color: Color(0xFFE60023),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -98,10 +119,13 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  /// Handle close button - navigate back
   void _handleClose() {
-    Navigator.of(context).pop();
+    // ✓ GO_ROUTER: Navigate back to auth entry page
+    context.pop();
   }
 
+  /// Handle forgot password
   void _handleForgotPassword() {
     showDialog(
       context: context,
@@ -115,7 +139,7 @@ class _SignInPageState extends State<SignInPage> {
           style: TextStyle(color: Colors.white),
         ),
         content: const Text(
-          'Password recovery is not available in this demo version.',
+          'Password recovery is not available in this demo version.\n\nIn a production app, this would send a password reset email.',
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
@@ -123,7 +147,10 @@ class _SignInPageState extends State<SignInPage> {
             onPressed: () => Navigator.pop(context),
             child: const Text(
               'OK',
-              style: TextStyle(color: Color(0xFFE60023)),
+              style: TextStyle(
+                color: Color(0xFFE60023),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -145,6 +172,7 @@ class _SignInPageState extends State<SignInPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // Close button
                     Align(
                       alignment: Alignment.centerLeft,
                       child: IconButton(
@@ -163,6 +191,8 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
+
+                    // Title
                     const Text(
                       'Log in',
                       style: TextStyle(
@@ -172,6 +202,8 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                     const SizedBox(height: 32),
+
+                    // Google sign-in button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -188,10 +220,24 @@ class _SignInPageState extends State<SignInPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
-                              'assets/icons/google.png',
+                            // Google icon placeholder (using G icon)
+                            Container(
                               width: 18,
                               height: 18,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'G',
+                                  style: TextStyle(
+                                    color: Color(0xFF1e1e1e),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ),
                             const SizedBox(width: 12),
                             const Text(
@@ -206,6 +252,8 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
+
+                    // OR divider
                     Row(
                       children: [
                         Expanded(
@@ -233,6 +281,8 @@ class _SignInPageState extends State<SignInPage> {
                       ],
                     ),
                     const SizedBox(height: 24),
+
+                    // Email display (read-only)
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
@@ -256,6 +306,8 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                     const SizedBox(height: 12),
+
+                    // Password input field
                     TextField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
@@ -315,6 +367,8 @@ class _SignInPageState extends State<SignInPage> {
                       onSubmitted: (_) => _handleLogin(),
                     ),
                     const SizedBox(height: 20),
+
+                    // Login button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -338,6 +392,8 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
+
+                    // Forgot password link
                     TextButton(
                       onPressed: _handleForgotPassword,
                       child: Text(
