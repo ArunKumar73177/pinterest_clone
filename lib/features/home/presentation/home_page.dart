@@ -1,13 +1,10 @@
-// lib/features/home/presentation/home_page.dart
-
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // ✓ STATE MANAGEMENT
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'; // ✓ MASONRY GRID
-import 'package:cached_network_image/cached_network_image.dart'; // ✓ IMAGE CACHING
-import 'package:shimmer/shimmer.dart'; // ✓ LOADING EFFECTS
-import 'package:go_router/go_router.dart'; // ✓ NAVIGATION
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/home_provider.dart';
-import '../../../core/widgets/pinterest_bottom_nav.dart';
 
 /// ✓ RIVERPOD: Main home feed page - Pinterest-style masonry grid
 /// ConsumerWidget allows direct access to Riverpod providers
@@ -20,7 +17,7 @@ class HomePage extends ConsumerWidget {
     final pinsAsyncValue = ref.watch(pinsProvider);
 
     return Scaffold(
-      backgroundColor: Colors.black, // Pinterest's signature black background
+      backgroundColor: Colors.black,
       body: RefreshIndicator(
         // ✓ PULL-TO-REFRESH: Invalidate provider to reload pins
         onRefresh: () async {
@@ -53,9 +50,8 @@ class HomePage extends ConsumerWidget {
           ),
         ),
       ),
-
-      // ✓ BOTTOM NAVIGATION: Pinterest-style bottom nav bar
-      bottomNavigationBar: const PinterestBottomNav(currentIndex: 0),
+      // ✓ REMOVED: Bottom navigation is now handled by ShellRoute in app_router.dart
+      // The BottomNavShell wraps this page automatically
     );
   }
 
@@ -63,7 +59,7 @@ class HomePage extends ConsumerWidget {
   /// No AppBar - clean minimal design
   Widget _buildPinterestHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8), // Minimal vertical padding
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -78,7 +74,7 @@ class HomePage extends ConsumerWidget {
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
-                  letterSpacing: -0.5, // Tighter spacing like Pinterest
+                  letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 6),
@@ -120,11 +116,11 @@ class HomePage extends ConsumerWidget {
     final aspectRatios = [0.75, 1.35, 0.6, 1.0, 1.5, 0.8, 0.7, 1.25, 1.1, 0.65];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4), // Tight edge spacing
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: MasonryGridView.count(
-        crossAxisCount: 2, // Two-column grid
-        mainAxisSpacing: 8, // Vertical spacing between cards
-        crossAxisSpacing: 8, // Horizontal spacing between cards
+        crossAxisCount: 2,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
         itemCount: 10,
         itemBuilder: (context, index) {
           final aspectRatio = aspectRatios[index % aspectRatios.length];
@@ -138,15 +134,15 @@ class HomePage extends ConsumerWidget {
   /// Subtle animation that doesn't distract
   Widget _buildShimmerCard(double aspectRatio) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[900]!, // Dark base matching Pinterest
-      highlightColor: Colors.grey[800]!, // Subtle highlight
-      period: const Duration(milliseconds: 1500), // Slow, smooth animation
+      baseColor: Colors.grey[900]!,
+      highlightColor: Colors.grey[800]!,
+      period: const Duration(milliseconds: 1500),
       child: AspectRatio(
         aspectRatio: 1 / aspectRatio,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.grey[900],
-            borderRadius: BorderRadius.circular(16), // Match actual card radius
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
       ),
@@ -202,11 +198,11 @@ class HomePage extends ConsumerWidget {
   /// Tightly packed, varied heights, smooth scrolling
   Widget _buildPinsGrid(BuildContext context, WidgetRef ref, List<Pin> pins) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4), // Minimal edge padding
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: MasonryGridView.count(
-        crossAxisCount: 2, // Two columns for mobile
-        mainAxisSpacing: 8, // Tight vertical spacing like Pinterest
-        crossAxisSpacing: 8, // Tight horizontal spacing
+        crossAxisCount: 2,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
         itemCount: pins.length,
         itemBuilder: (context, index) {
           final pin = pins[index];
@@ -227,54 +223,49 @@ class HomePage extends ConsumerWidget {
         // Navigate to detail page using go_router
         context.push('/pin/${pin.id}');
       },
-      child: AnimatedScale(
-        // Subtle scale feedback on tap (Pinterest-like interaction)
-        scale: 1.0,
-        duration: const Duration(milliseconds: 100),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16), // Pinterest corner radius
-          child: CachedNetworkImage(
-            imageUrl: pin.imageUrl,
-            fit: BoxFit.cover,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: CachedNetworkImage(
+          imageUrl: pin.imageUrl,
+          fit: BoxFit.cover,
 
-            // ✓ CACHED_NETWORK_IMAGE: Efficient caching reduces network calls
-            memCacheWidth: 800, // Optimize memory usage
-            maxWidthDiskCache: 800,
+          // ✓ CACHED_NETWORK_IMAGE: Efficient caching reduces network calls
+          memCacheWidth: 800,
+          maxWidthDiskCache: 800,
 
-            // ✓ SHIMMER: Placeholder while image loads
-            placeholder: (context, url) => AspectRatio(
-              aspectRatio: 1 / pin.aspectRatio,
-              child: Shimmer.fromColors(
-                baseColor: Colors.grey[900]!,
-                highlightColor: Colors.grey[800]!,
-                child: Container(
-                  color: Colors.grey[900],
-                ),
-              ),
-            ),
-
-            // Error widget if image fails to load
-            errorWidget: (context, url, error) => AspectRatio(
-              aspectRatio: 1 / pin.aspectRatio,
+          // ✓ SHIMMER: Placeholder while image loads
+          placeholder: (context, url) => AspectRatio(
+            aspectRatio: 1 / pin.aspectRatio,
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[900]!,
+              highlightColor: Colors.grey[800]!,
               child: Container(
                 color: Colors.grey[900],
-                child: const Icon(
-                  Icons.broken_image_outlined,
-                  size: 40,
-                  color: Colors.grey,
-                ),
               ),
             ),
+          ),
 
-            // ✓ CACHED_NETWORK_IMAGE: Custom image builder preserves aspect ratio
-            imageBuilder: (context, imageProvider) => AspectRatio(
-              aspectRatio: 1 / pin.aspectRatio,
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                  ),
+          // Error widget if image fails to load
+          errorWidget: (context, url, error) => AspectRatio(
+            aspectRatio: 1 / pin.aspectRatio,
+            child: Container(
+              color: Colors.grey[900],
+              child: const Icon(
+                Icons.broken_image_outlined,
+                size: 40,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+
+          // ✓ CACHED_NETWORK_IMAGE: Custom image builder preserves aspect ratio
+          imageBuilder: (context, imageProvider) => AspectRatio(
+            aspectRatio: 1 / pin.aspectRatio,
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),

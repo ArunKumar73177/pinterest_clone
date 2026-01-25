@@ -1,27 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // ✓ STATE MANAGEMENT
-import 'package:go_router/go_router.dart'; // ✓ NAVIGATION
-import 'package:pinterest_clone/features/auth/presentation/splash_page.dart';
-import 'package:pinterest_clone/features/auth/presentation/auth_entry_page.dart';
-import 'package:pinterest_clone/features/auth/presentation/sign_in_page.dart';
-import 'package:pinterest_clone/features/home/presentation/home_page.dart';
-import 'package:pinterest_clone/features/pin/presentation/pin_detail_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pinterest_clone/core/router/app_router.dart';
 
 void main() {
+  // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Pinterest-style status bar (dark theme)
+  // ✓ SYSTEM UI: Pinterest-style status bar configuration
+  // Transparent status bar with white icons for dark theme
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light, // White icons
+      statusBarIconBrightness: Brightness.light, // White icons on black
       systemNavigationBarColor: Colors.black,
       systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
 
-  // ✓ RIVERPOD: Wrap app with ProviderScope for state management
+  // ✓ RIVERPOD: Wrap entire app with ProviderScope
+  // This enables state management throughout the app
   runApp(
     const ProviderScope(
       child: PinterestCloneApp(),
@@ -29,137 +27,75 @@ void main() {
   );
 }
 
-/// ✓ GO_ROUTER: Router configuration provider
-/// Centralized routing for the entire app
-final goRouterProvider = Provider<GoRouter>((ref) {
-  return GoRouter(
-    initialLocation: '/',
-    debugLogDiagnostics: true,
-    routes: [
-      // Splash screen route
-      GoRoute(
-        path: '/',
-        name: 'splash',
-        builder: (context, state) => const SplashPage(),
-      ),
-
-      // Auth entry page (email input)
-      GoRoute(
-        path: '/auth-entry',
-        name: 'auth-entry',
-        builder: (context, state) => const AuthEntryPage(),
-      ),
-
-      // Sign in page with optional email parameter
-      GoRoute(
-        path: '/sign-in',
-        name: 'sign-in',
-        builder: (context, state) {
-          // Get email from extra data or query parameters
-          final email = state.extra as String? ??
-              state.uri.queryParameters['email'] ??
-              'user@example.com';
-          return SignInPage(email: email);
-        },
-      ),
-
-      // Main home feed (Pinterest-style masonry grid)
-      GoRoute(
-        path: '/home',
-        name: 'home',
-        builder: (context, state) => const HomePage(),
-      ),
-
-      // ✓ GO_ROUTER: Pin detail page with path parameter
-      GoRoute(
-        path: '/pin/:id',
-        name: 'pin-detail',
-        builder: (context, state) {
-          final pinId = state.pathParameters['id']!;
-          return PinDetailPage(pinId: pinId);
-        },
-      ),
-    ],
-
-    // Error page for undefined routes
-    errorBuilder: (context, state) => Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Page not found',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[300],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              state.uri.toString(),
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => context.go('/'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE60023),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-              ),
-              child: const Text('Go to Home'),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-});
-
-/// Main app widget
-/// ✓ RIVERPOD: ConsumerWidget to access providers
+/// ✓ MAIN APP: Root widget with routing configuration
+/// ConsumerWidget to access Riverpod providers
 class PinterestCloneApp extends ConsumerWidget {
   const PinterestCloneApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ✓ GO_ROUTER: Get router instance from provider
+    // ✓ GO_ROUTER: Watch router provider for navigation
     final router = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
+      // App metadata
       title: 'Pinterest Clone',
       debugShowCheckedModeBanner: false,
 
-      // Pinterest dark theme (used in home feed and pin detail)
+      // ✓ THEME: Pinterest dark theme configuration
       theme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.black,
+
+        // Pinterest color scheme
         colorScheme: ColorScheme.dark(
           primary: const Color(0xFFE60023), // Pinterest red
           secondary: Colors.white,
           surface: Colors.black,
+          background: Colors.black,
         ),
+
+        // Material 3 design system
         useMaterial3: true,
+
+        // AppBar theme for consistent headers
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.white),
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+
+        // Bottom navigation bar theme
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: Colors.black,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey[600],
+          type: BottomNavigationBarType.fixed,
+          elevation: 0,
+        ),
+
+        // Text theme
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.white),
+          titleLarge: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+
+        // Icon theme
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
       ),
 
-      // ✓ GO_ROUTER: Router configuration
+      // ✓ GO_ROUTER: Router configuration from provider
       routerConfig: router,
     );
   }
