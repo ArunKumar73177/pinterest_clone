@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:go_router/go_router.dart';
+import '../providers/saved_provider.dart'; // ✅ This imports Board and boardsProvider
+import '../../home/providers/home_provider.dart'; // ✅ This imports Pin and selectedPinProvider
 
 /// ✓ SAVED: Pinterest-style saved pins page
 /// Grid of saved/bookmarked pins organized by boards

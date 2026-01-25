@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
-import '../../../features/home/providers/home_provider.dart';
+import '../../home/providers/home_provider.dart';
 import 'dart:math';
 
 /// Board model for saved collections
