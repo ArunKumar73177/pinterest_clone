@@ -65,7 +65,6 @@ The app is built using:
 
 flutter build web
 
-
 and deployed manually via Netlify using the build/web directory.
 
 ▶️ Getting Started Locally
