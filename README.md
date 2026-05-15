@@ -48,7 +48,6 @@ lib/
 ├── routes/
 ├── main.dart
 
-
 Architecture follows feature-first + clean separation of concerns.
 
 🖥️ Platforms Supported
