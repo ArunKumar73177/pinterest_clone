@@ -117,4 +117,3 @@ Flutter Developer
 
 This project is for educational and demonstration purposes only.
 Not affiliated with Pinterest.
-
