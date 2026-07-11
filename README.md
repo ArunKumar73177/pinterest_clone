@@ -5,6 +5,7 @@ A Pinterest-inspired mobile and web application built using Flutter, following m
 This project demonstrates how to build a scalable Flutter app that works on Android and Web, with a production-ready UI similar to the Pinterest app.
 
 🚀 Features
+
 🧱 Masonry / Staggered Grid Layout (Pinterest-style feed)
 
 🌐 Real API Integration using Unsplash
